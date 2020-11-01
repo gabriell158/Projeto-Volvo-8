@@ -8,51 +8,48 @@ import './styles.css'
 
 import logoImg from '../../assets/logo.svg'
 
-export default function NewIncident() {
+export default function NewVehicle() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [value, setValue] = useState('')
 
   const history = useHistory()
   
-  const ongId = localStorage.getItem('ongId')
+  const userId = localStorage.getItem('userId')
   
-  async function handleNewIncident(e) {
+  async function handleNewVehicle(e) {
     e.preventDefault()
     const data = {
       title,
       description,
-      value,
     }
     try {
-      await api.post('/incidents', data, {
+      await api.post('/vehicles', data, {
         headers: {
-          Authorization: ongId,
+          Authorization: userId,
         }
       })
       
       history.push('/profile')
     } catch (err) {
-      alert('Erro ao cadastrar caso, tente novamente.')
+      alert('Erro ao cadastrar veículo, tente novamente.')
     }
   }
 
   return (
-    <div className="new-incident-container">
+    <div className="new-vehicle-container">
       <div className="content">
         <section>
           <img src={logoImg} alt="Be The Hero" />
-          <h1> Cadastrar Novo Caso </h1>
-          <p> Descreva o caso detalhadamente para encontrar um herói para resolver isso. </p>
+          <h1> Cadastrar Novo Veículo </h1>
+          <p> Adicione os componentes necessários para realizar o teste neste veículo.</p>
           <Link className="back-link" to="/profile">
             <FiArrowLeft size={16} color="#e02041" />
             Voltar para Home
           </Link>
         </section>
-        <form onSubmit={handleNewIncident}>
-          <input placeholder="Titulo do Caso" value={title} onChange={e => setTitle(e.target.value)} />
+        <form onSubmit={handleNewVehicle}>
+          <input placeholder="Titulo do Veículo" value={title} onChange={e => setTitle(e.target.value)} />
           <textarea placeholder="Descrição" value={description} onChange={e => setDescription(e.target.value)} />
-          <input placeholder="Valor em Reais" value={value} onChange={e => setValue(e.target.value)} />
           <button className="button" type="submit"> Cadastrar </button>
         </form>
       </div>

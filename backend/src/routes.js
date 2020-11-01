@@ -1,44 +1,42 @@
-const express = require('express')
-const { celebrate, Segments, Joi } = require('celebrate')
+const express = require('express');
+const { celebrate, Segments, Joi } = require('celebrate');
 
-const OngController = require('./controllers/OngController')
-const IncidentController = require('./controllers/IncidentController')
-const ProfileController = require('./controllers/ProfileController')
-const SessionController = require('./controllers/SessionController')
+const UserController = require('./controllers/UserController');
+const VehicleController = require('./controllers/VehicleController');
+const ProfileController = require('./controllers/ProfileController');
+const SessionController = require('./controllers/SessionController');
 
-const routes = express.Router()
+const routes = express.Router();
 
-routes.post('/sessions', SessionController.create)
+routes.post('/sessions', SessionController.create);
 
-routes.get('/ongs', OngController.index)
-routes.post('/ongs', celebrate({
+routes.get('/users', UserController.index);
+routes.post('/users', celebrate({
   [Segments.BODY]: Joi.object().keys({
     name: Joi.string().required(),
     email: Joi.string().required().email(),
-    whatsapp: Joi.string().required().min(10).max(11),
-    city: Joi.string().required(),
-    uf: Joi.string().required().length(2),
+    /*whatsapp: Joi.string().required().min(10).max(11),*/
   })
-}), OngController.create)
+}), UserController.create);
 
 routes.get('/profile', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required(),
   }).unknown(),
-}), ProfileController.index)
+}), ProfileController.index);
 
-routes.get('/incidents', celebrate({
+routes.get('/vehicles', celebrate({
   [Segments.QUERY]: Joi.object().keys({
     page: Joi.number(),
   })
-}), IncidentController.index)
+}), VehicleController.index);
 
-routes.post('/incidents', IncidentController.create)
+routes.post('/vehicles', VehicleController.create);
 
-routes.delete('/incidents/:id', celebrate({
+routes.delete('/vehicles/:id', celebrate({
   [Segments.PARAMS]: Joi.object().keys({
     id: Joi.number().required(),
   })
-}), IncidentController.delete)
+}), VehicleController.delete);
 
-module.exports = routes
+module.exports = routes;
