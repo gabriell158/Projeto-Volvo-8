@@ -4,7 +4,7 @@ module.exports = {
     async index(request, response) {
         const userId = request.headers.authorization;
 
-        const vehicles = await connection('vehicles')
+        const vehicles = await connection('equipments')
             .where('userId',userId)
             .select('*');
 

@@ -8,13 +8,13 @@ module.exports = {
         return response.json(users);
     },
     async create(request, response) {
-        const { name, email } = request.body;
+        const { userName, email } = request.body;
     
         const id = generateUniqueId();
     
         await connection('users').insert({
             id,
-            name,
+            userName,
             email,
             /*whatsapp*/
         })

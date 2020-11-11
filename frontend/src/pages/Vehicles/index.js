@@ -1,12 +1,12 @@
 import React, { useState, useEffect} from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { FiPower } from 'react-icons/fi';
+import { FiPower, FiTrash2 } from 'react-icons/fi';
 
 import api from '../../services/api';
 
 import './styles.css';
 
-export default function Profile() {
+export default function Vehicles() {
     const [vehicles, setVehicles] = useState([]);
 
     const history = useHistory();
@@ -15,7 +15,7 @@ export default function Profile() {
     const userName = localStorage.getItem('userName');
 
     useEffect(() => {
-        api.get('profile', {
+        api.get('vehicles', {
             headers: {
                 Authorization: userId,
             }
@@ -23,6 +23,20 @@ export default function Profile() {
             setVehicles(response.data);
         })
     }, [userId]);
+
+    async function handleDeleteVehicle(id) {
+        try { 
+            await api.delete(`vehicles/${id}`, {
+                headers: {
+                    Authorization:userId,
+                }
+            });
+
+            setVehicles(vehicles.filter(vehicle => vehicle.id !== id));
+        } catch (err) {
+            alert('Erro ao deletar veículo. Tente novamente.');
+        }
+    }
 
     function handleLogout() {
         localStorage.clear();
@@ -35,23 +49,27 @@ export default function Profile() {
             <header>
                 <span>Bem vindo(a), {userName}</span>
 
-                <Link className="button" to="/equipments">Equipamentos</Link>
-                <Link className="button" to="/vehicles">Veículos</Link>
+                <Link className="button" to="/profile">Perfil</Link>
+                <Link className="button" to="/newVehicle">Cadastrar novo veículo</Link>
                 <button onClick={handleLogout} type="button">
                     <FiPower size={18} color="#E02041" />
                 </button>
             </header>
 
-            <h1>Selecione um veículo para realizar um teste</h1>
+            <h1>Veículos cadastrados</h1>
 
             <ul>
                 {vehicles.map(vehicle => (
                     <li key={vehicle.id}>
                         <strong>VEÍCULO:</strong>
-                        <p>{vehicle.name}</p>
+                        <p>{vehicle.vehicleName}</p>
 
-                        <strong>DESCRIÇÃO:</strong>
+                        <strong>EQUIPAMENTOS:</strong>
                         <p>{vehicle.description}</p>
+
+                        <button onClick={() => handleDeleteVehicle(vehicle.id)} type="button">
+                            <FiTrash2 size={20} color="a8a8b3" />
+                        </button>
                     </li>
                 ))}
             </ul>

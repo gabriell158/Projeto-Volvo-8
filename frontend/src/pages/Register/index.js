@@ -7,7 +7,7 @@ import api from '../../services/api';
 import './styles.css';
 
 export default function Register() {
-    const [name, setName] = useState('');
+    const [userName, setName] = useState('');
     const [email, setEmail] = useState('');
     //const [whatsapp, setWhatsapp] = useState('');
 
@@ -15,18 +15,18 @@ export default function Register() {
 
     async function handleRegister(e) {
         e.preventDefault();
-
+        
         const data = {
-            name,
+            userName,
             email
             //whatsapp
         };
-        console.log(data);
+
         try {
             const response = await api.post('users', data);
-    
+            
             alert(`Seu ID de acesso: ${response.data.id}`);
-
+            
             history.push('/');
         } catch (err) {
             alert('Erro no cadastro, tente novamente.');
@@ -46,7 +46,7 @@ export default function Register() {
                     </Link>
                 </section>
                 <form onSubmit={handleRegister}>
-                    <input placeholder="Nome" value={name} onChange={e => setName(e.target.value)} />
+                    <input placeholder="Nome" value={userName} onChange={e => setName(e.target.value)} />
                     <input type="email" placeholder="E-mail" value={email} onChange={e => setEmail(e.target.value)} />
                     {/*<input placeholder="WhatsApp" value={whatsapp} onChange={e => setWhatsapp(e.target.value)} />*/}
 

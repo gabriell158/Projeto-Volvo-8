@@ -5,15 +5,17 @@ const UserController = require('./controllers/UserController');
 const VehicleController = require('./controllers/VehicleController');
 const ProfileController = require('./controllers/ProfileController');
 const SessionController = require('./controllers/SessionController');
+const EquipmentController = require('./controllers/EquipmentController');
 
 const routes = express.Router();
 
 routes.post('/sessions', SessionController.create);
 
 routes.get('/users', UserController.index);
+
 routes.post('/users', celebrate({
   [Segments.BODY]: Joi.object().keys({
-    name: Joi.string().required(),
+    userName: Joi.string().required(),
     email: Joi.string().required().email(),
     /*whatsapp: Joi.string().required().min(10).max(11),*/
   })
@@ -38,5 +40,19 @@ routes.delete('/vehicles/:id', celebrate({
     id: Joi.number().required(),
   })
 }), VehicleController.delete);
+
+routes.get('/equipments', celebrate({
+  [Segments.QUERY]: Joi.object().keys({
+    page: Joi.number(),
+  })
+}), EquipmentController.index);
+
+routes.post('/equipments', EquipmentController.create);
+
+routes.delete('/equipments/:id', celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    id: Joi.number().required(),
+  })
+}), EquipmentController.delete);
 
 module.exports = routes;

@@ -4,14 +4,14 @@ module.exports = {
     async index(request, response) {
         const { page = 1} = request.query;
 
-        const [count] = await connection('vehicles').count();
+        const [count] = await connection('equipments').count();
 
-        const vehicles = await connection('vehicles')
-            .join('users','users.id','=','vehicles.userId')
+        const equipments = await connection('equipments')
+            .join('users','users.id','=','equipments.userId')
             .limit(5)
             .offset((page - 1) * 5)
             .select([
-                'vehicles.*',
+                'equipments.*',
                 'users.userName',
                 'users.email'
                 /*'users.whatsapp'*/
@@ -19,19 +19,21 @@ module.exports = {
 
         response.header('X-total-count', count['count(*)']);
         
-        return response.json(vehicles);
+        return response.json(equipments);
     },
     async create(request,response) {
-        const { vehicleName, description, equipList } = request.body;
+        const { equipName, description, quantity, location } = request.body;
         const userId = request.headers.authorization;
-        if (userId == null) {
+
+        if(userId == null) {
             return response.status(401).json({ error: 'Operation not permitted.' });
         }
-        
-        const [id] = await connection('vehicles').insert({
-            vehicleName,
+
+        const [id] = await connection('equipments').insert({
+            equipName,
             description,
-            equipList,
+            quantity,
+            location,
             userId,
         });
 
@@ -42,16 +44,16 @@ module.exports = {
         const { id } = request.params;
         const userId = request.headers.authorization;
 
-        const vehicles = await connection('vehicles')
+        const equipments = await connection('equipments')
             .where('id',id)
             .select('userId')
             .first();
 
-        // if (vehicles.userId != userId) {
+        // if (equipments.userId != userId) {
         //     return response.status(401).json({ error: 'Operation not permitted.' });
         // }
 
-        await connection('vehicles').where('id', id).delete();
+        await connection('equipments').where('id', id).delete();
 
         return response.status(204).send();
     }

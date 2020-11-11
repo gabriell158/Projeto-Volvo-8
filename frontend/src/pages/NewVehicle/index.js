@@ -1,27 +1,73 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import { FiArrowLeft } from 'react-icons/fi'
+import Select from 'react-select'
+import makeAnimated from 'react-select/animated';
 
 import api from '../../services/api'
 
 import './styles.css'
 
-import logoImg from '../../assets/logo.svg'
+const animatedComponents = makeAnimated();
 
 export default function NewVehicle() {
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
+  const [vehicleName, setName] = useState('')
+  const [equipList, setEquipList] = useState()
+  const [equipments, setEquipments] = useState([]);
 
   const history = useHistory()
-  
+
   const userId = localStorage.getItem('userId')
+
+  useEffect(() => {
+    api.get('equipments', {
+        headers: {
+          Authorization: userId,
+        }
+    }).then(response => {
+        setEquipments(response.data);
+    })
+  }, [userId]);
+
+  const options = [];
   
+  equipments.map(fillOptions);
+
+  async function fillOptions(equipment) {
+    try {
+      const obj = {
+        id: equipment["id"],
+        value: equipment["equipName"],
+        label: equipment["equipName"],
+      }
+      options.push(obj)
+    } catch (err){
+      alert('Erro ao carregar os equipamentos.')
+    }
+  }
+
+  async function handleChange(id) {
+    try {
+      setEquipList(id)
+    } catch (err) {
+      alert(err)
+    }
+  }
+
   async function handleNewVehicle(e) {
     e.preventDefault()
-    const data = {
-      title,
-      description,
+    let description = []
+
+    for(var i = 0; i < equipList.length; i++) {
+      description += equipList[i].value + ', '
     }
+
+    const data = {
+      vehicleName,
+      description,
+      equipList
+    }
+
     try {
       await api.post('/vehicles', data, {
         headers: {
@@ -29,7 +75,8 @@ export default function NewVehicle() {
         }
       })
       
-      history.push('/profile')
+      history.push('/vehicles')
+      alert('Veículo cadastrado com sucesso.')
     } catch (err) {
       alert('Erro ao cadastrar veículo, tente novamente.')
     }
@@ -39,18 +86,25 @@ export default function NewVehicle() {
     <div className="new-vehicle-container">
       <div className="content">
         <section>
-          <img src={logoImg} alt="Be The Hero" />
+          {/*<img src={logoImg} alt="Be The Hero" />*/}
           <h1> Cadastrar Novo Veículo </h1>
-          <p> Adicione os componentes necessários para realizar o teste neste veículo.</p>
+          <p> Adicione os equipamentos necessários para realizar o teste neste veículo.</p>
           <Link className="back-link" to="/profile">
             <FiArrowLeft size={16} color="#e02041" />
             Voltar para Home
           </Link>
         </section>
         <form onSubmit={handleNewVehicle}>
-          <input placeholder="Titulo do Veículo" value={title} onChange={e => setTitle(e.target.value)} />
-          <textarea placeholder="Descrição" value={description} onChange={e => setDescription(e.target.value)} />
-          <button className="button" type="submit"> Cadastrar </button>
+          <input placeholder="Nome do Veículo" value={vehicleName} onChange={e => setName(e.target.value)} />
+              <Select
+                isMulti
+                options={options}
+                value={equipList}
+                closeMenuOnSelect={false}
+                components={animatedComponents}
+                onChange={handleChange}
+              />
+          <button className="button" type="submit">Cadastrar</button>
         </form>
       </div>
     </div>
