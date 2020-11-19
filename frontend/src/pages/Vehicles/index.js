@@ -1,6 +1,8 @@
 import React, { useState, useEffect} from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { FiPower, FiTrash2 } from 'react-icons/fi';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 
 import api from '../../services/api';
 
@@ -32,9 +34,37 @@ export default function Vehicles() {
                 }
             });
 
-            setVehicles(vehicles.filter(vehicle => vehicle.id !== id));
+            const MySwal = withReactContent(Swal)
+
+            MySwal.fire({
+                icon: 'warning',
+                title: 'Apagar veículo?',
+                showConfirmButton: false,
+                showDenyButton: true,
+                showCancelButton: true,
+                denyButtonText: `Deletar`,
+                cancelButtonText: `Cancelar`,
+            }).then((result) => {
+                if (result.isDenied) {
+                    setVehicles(vehicles.filter(vehicle => vehicle.id !== id));
+                    return Swal.fire(
+                        'Deletado!', '', 'success'
+                    )
+                }
+            })
         } catch (err) {
-            alert('Erro ao deletar veículo. Tente novamente.');
+            const MySwal = withReactContent(Swal)
+
+            MySwal.fire({
+                didOpen: () => {
+                    MySwal.clickConfirm()
+                }
+            }).then(() => {
+                return MySwal.fire({
+                    icon: 'error',
+                    title: 'Erro ao deletar veículo. Tente novamente'
+                })
+            })
         }
     }
 

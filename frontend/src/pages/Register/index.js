@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 
 import api from '../../services/api';
 
@@ -24,12 +26,34 @@ export default function Register() {
 
         try {
             const response = await api.post('users', data);
-            
-            alert(`Seu ID de acesso: ${response.data.id}`);
+
+            const MySwal = withReactContent(Swal)
+
+            MySwal.fire({
+                didOpen: () => {
+                    MySwal.clickConfirm()
+                }
+            }).then(() => {
+                return MySwal.fire({
+                    icon: 'info',
+                    title: `Seu ID de acesso: ${response.data.id}`
+                })
+            })
             
             history.push('/');
         } catch (err) {
-            alert('Erro no cadastro, tente novamente.');
+            const MySwal = withReactContent(Swal)
+
+            MySwal.fire({
+                didOpen: () => {
+                    MySwal.clickConfirm()
+                }
+            }).then(() => {
+                return MySwal.fire({
+                    icon: 'error',
+                    title: `Erro no cadastro, tente novamente`
+                })
+            })
         }
     }
     return(

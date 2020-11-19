@@ -3,6 +3,8 @@ import { Link, useHistory } from 'react-router-dom'
 import { FiArrowLeft } from 'react-icons/fi'
 import Select from 'react-select'
 import makeAnimated from 'react-select/animated';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 
 import api from '../../services/api'
 
@@ -42,7 +44,20 @@ export default function NewVehicle() {
       }
       options.push(obj)
     } catch (err){
-      alert('Erro ao carregar os equipamentos.')
+
+      const MySwal = withReactContent(Swal)
+
+      MySwal.fire({
+        didOpen: () => {
+          MySwal.clickConfirm()
+        }
+      }).then(() => {
+        return MySwal.fire({
+          icon: 'error',
+          title: 'Erro ao carregar os equipamentos'
+        })
+      })
+      history.push('/vehicles')
     }
   }
 
@@ -75,10 +90,32 @@ export default function NewVehicle() {
         }
       })
       
+      const MySwal = withReactContent(Swal)
+
+      MySwal.fire({
+          didOpen: () => {
+              MySwal.clickConfirm()
+          }
+      }).then(() => {
+        return MySwal.fire({
+          icon: 'success',
+          title: 'Veículo cadastrado com sucesso'
+        })
+      })
       history.push('/vehicles')
-      alert('Veículo cadastrado com sucesso.')
     } catch (err) {
-      alert('Erro ao cadastrar veículo, tente novamente.')
+      const MySwal = withReactContent(Swal)
+
+      MySwal.fire({
+        didOpen: () => {
+          MySwal.clickConfirm()
+        }
+      }).then(() => {
+        return MySwal.fire({
+          icon: 'error',
+          title: 'Erro ao cadastrar veículo, tente novamente'
+        })
+      })
     }
   }
 
@@ -96,14 +133,14 @@ export default function NewVehicle() {
         </section>
         <form onSubmit={handleNewVehicle}>
           <input placeholder="Nome do Veículo" value={vehicleName} onChange={e => setName(e.target.value)} />
-              <Select
-                isMulti
-                options={options}
-                value={equipList}
-                closeMenuOnSelect={false}
-                components={animatedComponents}
-                onChange={handleChange}
-              />
+          <Select
+            isMulti
+            options={options}
+            value={equipList}
+            closeMenuOnSelect={false}
+            components={animatedComponents}
+            onChange={handleChange}
+          />
           <button className="button" type="submit">Cadastrar</button>
         </form>
       </div>

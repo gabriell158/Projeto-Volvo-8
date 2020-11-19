@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import { FiArrowLeft } from 'react-icons/fi'
 import api from '../../services/api'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 
 import './styles.css'
 
@@ -29,11 +31,33 @@ export default function NewEquipment() {
           Authorization: userId,
         }
       })
+
+      const MySwal = withReactContent(Swal)
       
-      alert('Equipamento cadastrado com sucesso.')
+      MySwal.fire({
+          didOpen: () => {
+              MySwal.clickConfirm()
+          }
+      }).then(() => {
+          return MySwal.fire({
+              icon: 'success',
+              title: 'Equipamento cadastrado com sucesso'
+          })
+      })
       history.push('/equipments')
     } catch (err) {
-      alert('Erro ao cadastrar equipamento, tente novamente.')
+      const MySwal = withReactContent(Swal)
+
+      MySwal.fire({
+          didOpen: () => {
+              MySwal.clickConfirm()
+          }
+      }).then(() => {
+          return MySwal.fire({
+              icon: 'error',
+              title: 'Erro ao cadastrar equipamento, tente novamente'
+          })
+      })
     }
   }
 

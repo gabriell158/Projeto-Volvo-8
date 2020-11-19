@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { FiLogIn } from 'react-icons/fi';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 
 import api from '../../services/api';
 
@@ -21,7 +23,18 @@ export default function Logon() {
             
             history.push('/profile');
         } catch (err) {
-            alert('Falha no login, tente novamente.');
+            const MySwal = withReactContent(Swal)
+
+            MySwal.fire({
+                didOpen: () => {
+                    MySwal.clickConfirm()
+                }
+            }).then(() => {
+                return MySwal.fire({
+                    icon: 'error',
+                    title: 'Falha no login, tente novamente'
+                })
+            })
         }
     }
 
